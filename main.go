@@ -1,15 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 )
-
-func handler(writer http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(writer, "Hello my friend %s!", request.URL.Path[1:])
-}
 
 func main() {
 	port := os.Getenv("PORT")
@@ -18,6 +13,16 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":"+port, nil)
+	mux := http.NewServeMux()
+
+	// index lists all the food in the db.
+	mux.HandleFunc("/", index)
+
+	// starting up the server
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: mux,
+	}
+
+	server.ListenAndServe()
 }
