@@ -19,7 +19,14 @@ func scrape(id string) {
 	scraper := NewScraper(baseUrl + id)
 
 	if foodExists := data.FoodWithIdExists(id); foodExists == false {
-		f := data.NewFood(id, getFoodName(scraper), getNutritions(scraper))
+		titleTokens := processTitle(scraper)
+		foodName := strings.TrimSpace(titleTokens[0])
+		foodCompany := ""
+		if (len(titleTokens) > 1) {
+			foodCompany = strings.TrimSpace(titleTokens[1])
+		}
+
+		f := data.NewFood(id, foodName, foodCompany, getNutritions(scraper))
 		data.InsertFood(f)
 	}
 
@@ -29,10 +36,12 @@ func scrape(id string) {
 	}
 }
 
-func getFoodName(s *Scraper) string {
+func processTitle(s *Scraper) []string {
 	selection := s.Find("#wrap #content #main .main-title")
-	foodName := returnFirstValue(selection)
-	return foodName
+	title := returnFirstValue(selection)
+	title = strings.Replace(title, "Calories in ", "", 1)
+	titleTokens := strings.SplitN(title, "-", 1)
+	return titleTokens
 }
 
 func getNutritions(s *Scraper) []data.Nutrition {

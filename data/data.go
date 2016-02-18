@@ -33,8 +33,8 @@ func NewNutrition(name string, quantity string) Nutrition {
 }
 
 // NewFood returns a Food.
-func NewFood(id string, name string, nut []Nutrition) Food {
-	f := Food{Id: id, Name: name, Nutritions: nut}
+func NewFood(id, name, company string, nut []Nutrition) Food {
+	f := Food{Id: id, Name: name, Company: company, Nutritions: nut}
 	return f
 }
 
