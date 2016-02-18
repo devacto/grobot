@@ -2,8 +2,9 @@ package data
 
 import (
 	"fmt"
-	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/mgo.v2"
 	"os"
+
+	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/mgo.v2"
 )
 
 // Nutrition is the kind of nutrition and the amount.
@@ -32,7 +33,7 @@ func GetAllFoods() []Food {
 	defer session.Close()
 
 	session.SetMode(mgo.Monotonic, true)
-	Col = session.DB("test").C("foods")
+	Col = session.DB("").C("foods")
 
 	var result []Food
 	if err := Col.Find(nil).All(&result); err != nil {

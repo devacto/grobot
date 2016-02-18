@@ -28,3 +28,6 @@ _testmain.go
 
 # IDE
 .idea
+
+# gin-bin
+gin-bin
