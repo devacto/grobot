@@ -23,6 +23,18 @@ type Food struct {
 // Col is the Collection returned from the DB.
 var Col *mgo.Collection
 
+// NewNutrition returns a Nutrition
+func NewNutrition(name string, quantity string) Nutrition {
+	n := Nutrition{Name: name, Quantity: quantity}
+	return n
+}
+
+// NewFood returns a Food
+func NewFood(name string, nut []Nutrition) Food {
+	f := Food{Name: name, Nutritions: nut}
+	return f
+}
+
 // GetAllFoods fetches all foods from the database.
 func GetAllFoods() []Food {
 	session, err := mgo.Dial(os.Getenv("MONGOLAB_URI"))
@@ -36,8 +48,25 @@ func GetAllFoods() []Food {
 	Col = session.DB("").C("foods")
 
 	var result []Food
-	if err := Col.Find(nil).All(&result); err != nil {
+	if err = Col.Find(nil).All(&result); err != nil {
 		panic(err)
 	}
 	return result
+}
+
+// InsertFood inserts one food into the base.
+func InsertFood(f Food) {
+	session, err := mgo.Dial(os.Getenv("MONGOLAB_URI"))
+	if err != nil {
+		fmt.Printf("Can't connect to mongo, go error %v\n", err)
+		os.Exit(1)
+	}
+	defer session.Close()
+
+	session.SetMode(mgo.Monotonic, true)
+	Col = session.DB("").C("foods")
+
+	if err = Col.Insert(f); err != nil {
+		panic(err)
+	}
 }
