@@ -15,11 +15,18 @@ func main() {
 
 func scrape(id string) {
 	fmt.Printf("URL: %s%s\n", baseUrl, id)
+
 	scraper := NewScraper(baseUrl + id)
 
-	f := data.NewFood(getFoodName(scraper), getNutritions(scraper))
-	data.InsertFood(f)
-	getOtherLinks(scraper)
+	if foodExists := data.FoodWithIdExists(id); foodExists == false {
+		f := data.NewFood(id, getFoodName(scraper), getNutritions(scraper))
+		data.InsertFood(f)
+	}
+
+	otherFoodIds := getOtherIds(scraper)
+	for _, v := range otherFoodIds {
+		scrape(v)
+	}
 }
 
 func getFoodName(s *Scraper) string {
@@ -49,13 +56,17 @@ func getNutritions(s *Scraper) []data.Nutrition {
 	return nutritionArray
 }
 
-func getOtherLinks(s *Scraper) {
+func getOtherIds(s *Scraper) []string {
 	selection := s.FindLink("#wrap #content #main #other-items ul li a")
+	var otherLinks []string
+
 	for _, v := range selection {
 		if v!= "" {
-			fmt.Printf("next link: %s\n", getIdFromPath(v))
+			otherLinks = append(otherLinks, getIdFromPath(v))
 		}
 	}
+
+	return otherLinks
 }
 
 func returnFirstValue(s []string) string {
