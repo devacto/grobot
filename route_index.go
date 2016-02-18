@@ -4,20 +4,15 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-)
 
-// Person is s type.
-type Person struct {
-	Name string
-}
+	"github.com/devacto/grobot/data"
+)
 
 // index lists all food in the database
 func index(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	person := Person{Name: "Victor"}
-
-	json, err := json.Marshal(person)
+	json, err := json.Marshal(data.GetAllFoods())
 
 	if err != nil {
 		log.Fatal(err)

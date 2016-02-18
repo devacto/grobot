@@ -25,3 +25,6 @@ _testmain.go
 
 # OSX
 .DS_Store
+
+# IDE
+.idea

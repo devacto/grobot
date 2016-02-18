@@ -1,0 +1,42 @@
+{
+  "name": "Lindor Truffles - Swiss Dark (Block Form)",
+  "company": "Lindt",
+  "nutritions": [
+    {
+      "name": "Calories",
+      "quantity": "58"
+    },
+    {
+      "name": "Total Fat",
+      "quantity": "0 g"
+    },
+    {
+      "name": "Saturated",
+      "quantity": "0 g"
+    },
+    {
+      "name": "Polyunsaturated",
+      "quantity": "0 g"
+    },
+    {
+      "name": "Monounsaturated",
+      "quantity": "0 g"
+    },
+    {
+      "name": "Trans",
+      "quantity": "0 g"
+    },
+    {
+      "name": "Cholesterol",
+      "quantity": "0 mg"
+    },
+    {
+      "name": "Vitamin A",
+      "quantity": "0%"
+    },
+    {
+      "name": "Vitamin C",
+      "quantity": "0%"
+    }
+  ]
+}
