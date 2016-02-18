@@ -7,16 +7,19 @@ import (
 	"github.com/devacto/grobot/data"
 )
 
+const baseUrl = "http://www.myfitnesspal.com"
+
 func main() {
-	scrape("http://www.myfitnesspal.com/food/calories/179990009")
+	scrape("/food/calories/179990009")
 }
 
-func scrape(url string) {
-	fmt.Printf("URL: %s", url)
-	scraper := NewScraper(url)
+func scrape(path string) {
+	fmt.Printf("URL: %s%s\n", baseUrl, path)
+	scraper := NewScraper(baseUrl + path)
 
 	f := data.NewFood(getFoodName(scraper), getNutritions(scraper))
 	data.InsertFood(f)
+	getOtherLinks(scraper)
 }
 
 func getFoodName(s *Scraper) string {
@@ -44,6 +47,15 @@ func getNutritions(s *Scraper) []data.Nutrition {
 	}
 
 	return nutritionArray
+}
+
+func getOtherLinks(s *Scraper) {
+	selection := s.FindLink("#wrap #content #main #other-items ul li a")
+	for _, v := range selection {
+		if v!= "" {
+			fmt.Printf("next link: %s\n", v)
+		}
+	}
 }
 
 func returnFirstValue(s []string) string {
