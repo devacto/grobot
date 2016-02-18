@@ -1,1 +1,2 @@
-web: grobot
+web: server
+worker: scraper
