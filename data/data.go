@@ -1,8 +1,8 @@
 package data
 
 import (
-	"gopkg.in/mgo.v2"
 	"fmt"
+	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/mgo.v2"
 	"os"
 )
 
