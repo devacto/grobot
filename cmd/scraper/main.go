@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"strings"
 
 	"github.com/devacto/grobot/data"
@@ -14,7 +14,7 @@ func main() {
 }
 
 func scrape(id string) {
-	fmt.Printf("URL: %s%s\n", baseUrl, id)
+	log.Printf("Visiting %s%s\n", baseUrl, id)
 
 	scraper := NewScraper(baseUrl + id)
 

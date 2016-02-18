@@ -77,6 +77,8 @@ func GetAllFoods() []Food {
 	return result
 }
 
+
+
 // InsertFood inserts one food into the database.
 func InsertFood(f Food) {
 	session, err := mgo.Dial(os.Getenv("MONGOLAB_URI"))
@@ -94,6 +96,7 @@ func InsertFood(f Food) {
 	}
 
 	es, err := elastic.NewClient(
+		elastic.SetSniff(false),
 		elastic.SetURL(os.Getenv("BONSAI_URL")),
 		elastic.SetMaxRetries(1))
 	if err != nil {
