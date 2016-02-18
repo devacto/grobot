@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"encoding/json"
 
 	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/mgo.v2"
 	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/mgo.v2/bson"
@@ -58,26 +59,45 @@ func FoodWithIdExists(id string) bool {
 	return true
 }
 
-// GetAllFoods fetches all foods from the database.
-func GetAllFoods() []Food {
-	session, err := mgo.Dial(os.Getenv("MONGOLAB_URI"))
-	if err != nil {
-		fmt.Printf("Can't connect to mongo, go error %v\n", err)
-		os.Exit(1)
-	}
-	defer session.Close()
-
-	session.SetMode(mgo.Monotonic, true)
-	Col = session.DB("").C("foods")
-
+func SearchFoods(terms string) []Food {
 	var result []Food
-	if err = Col.Find(nil).All(&result); err != nil {
-		panic(err)
+
+	es, err := elastic.NewClient(
+		elastic.SetSniff(false),
+		elastic.SetURL(os.Getenv("BONSAI_URL")),
+		elastic.SetMaxRetries(1))
+	if err != nil {
+		log.Fatalf("Cannot connect to elastic at %s error: %v\n", os.Getenv("BONSAI_URL"), err)
 	}
+
+	log.Printf("Serving search with terms: %s\n", terms)
+
+	termQuery := elastic.NewCommonQuery("Name", terms)
+	searchResult, err := es.Search().
+		Index("food").
+		Query(&termQuery).
+		Sort("Name", true).
+		From(0).Size(10).
+		Do()
+	if err != nil {
+		log.Panicf("Something wrong while searching error %v\n", err)
+	}
+
+	if searchResult.Hits != nil {
+		for _, hit := range searchResult.Hits.Hits {
+			var f Food
+			err := json.Unmarshal(*hit.Source, &f)
+			if err != nil {
+				log.Panicf("Cannot deserealise result into Food object error %v\n", err)
+			}
+			result = append(result, f)
+		}
+	} else {
+		log.Printf("no result")
+	}
+
 	return result
 }
-
-
 
 // InsertFood inserts one food into the database.
 func InsertFood(f Food) {

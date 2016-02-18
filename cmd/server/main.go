@@ -15,8 +15,10 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// index lists all the food in the db.
-	mux.HandleFunc("/", index)
+	// search allows you to search based on keywords
+	// http://localhost:5000/search?q=test1+test2
+	// q is the query parameter
+	mux.HandleFunc("/search", search)
 
 	// starting up the server
 	server := &http.Server{
