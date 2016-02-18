@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/PuerkitoBio/goquery"
+	"github.com/devacto/grobot/Godeps/_workspace/src/github.com/PuerkitoBio/goquery"
 )
 
 type Scraper struct {
@@ -26,7 +26,7 @@ func (s *Scraper) Find(selector string) []string {
 	return selection
 }
 
-func (s *Scraper) FindLink(selector string)[]string{
+func (s *Scraper) FindLink(selector string) []string {
 	selection := make([]string, 10)
 	s.document.Find(selector).Each(func(i int, s *goquery.Selection) {
 		selection = append(selection, s.AttrOr("href", ""))
