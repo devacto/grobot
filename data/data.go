@@ -2,11 +2,12 @@ package data
 
 import (
 	"fmt"
-	"os"
 	"log"
+	"os"
 
 	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/mgo.v2"
 	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/mgo.v2/bson"
+	"github.com/devacto/grobot/Godeps/_workspace/src/gopkg.in/olivere/elastic.v2"
 )
 
 // Nutrition is the kind of nutrition and the amount.
@@ -90,5 +91,35 @@ func InsertFood(f Food) {
 
 	if err = Col.Insert(f); err != nil {
 		panic(err)
+	}
+
+	es, err := elastic.NewClient(
+		elastic.SetURL(os.Getenv("BONSAI_URL")),
+		elastic.SetMaxRetries(1))
+	if err != nil {
+		log.Fatalf("Cannot connect to elastic at %s error: %v\n", os.Getenv("BONSAI_URL"), err)
+	}
+
+	// If index does not exist then create food index.
+	exists, err := es.IndexExists("food").Do()
+	if err != nil {
+		log.Panicf("Cannot check if index exists error %v\n", err)
+	}
+	if !exists {
+		_, err = es.CreateIndex("food").Do()
+		if err != nil {
+			log.Panicf("Cannot create index error %v", err)
+		}
+	}
+
+	log.Printf("Indexing %s", f.Name)
+	_, err = es.Index().
+		Index("food").
+		Type("food").
+		Id(f.Id).
+		BodyJson(f).
+		Do()
+	if err != nil {
+		log.Panicf("Cannot index a food error %v\n", err)
 	}
 }
